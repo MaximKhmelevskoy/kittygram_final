@@ -5,12 +5,10 @@ on:
     branches:
       - main
 
-
 jobs:
 
   tests:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -36,7 +34,6 @@ jobs:
 
   frontend_tests:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -58,7 +55,6 @@ jobs:
   build_backend:
     runs-on: ubuntu-latest
     needs: tests
-
     steps:
       - uses: actions/checkout@v4
 
@@ -79,7 +75,6 @@ jobs:
   build_frontend:
     runs-on: ubuntu-latest
     needs: frontend_tests
-
     steps:
       - uses: actions/checkout@v4
 
@@ -100,7 +95,6 @@ jobs:
   build_gateway:
     runs-on: ubuntu-latest
     needs: tests
-
     steps:
       - uses: actions/checkout@v4
 
@@ -128,8 +122,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # копируем compose
-      - name: Copy docker-compose
+      # КОПИРУЕМ ТОЛЬКО compose.production.yml (ПО ТЗ)
+      - name: Copy docker-compose.production.yml
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -138,17 +132,8 @@ jobs:
           source: "docker-compose.production.yml"
           target: "kittygram"
 
-      # копируем .env (КРИТИЧНО)
-      - name: Copy env file
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          target: "kittygram"
-
-      # деплой
-      - name: Deploy
+      # ДЕПЛОЙ
+      - name: Deploy on server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOST }}
@@ -156,17 +141,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd kittygram
-            docker compose pull
-            docker compose down
-            docker compose up -d
-            docker compose exec backend python manage.py migrate
-            docker compose exec backend python manage.py collectstatic --noinput
+            sudo docker compose -f docker-compose.production.yml pull
+            sudo docker compose -f docker-compose.production.yml down
+            sudo docker compose -f docker-compose.production.yml up -d
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+            sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput
 
 
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
-
     steps:
       - name: Telegram notify
         uses: appleboy/telegram-action@master
