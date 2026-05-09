@@ -12,10 +12,13 @@ router.register(r'achievements', AchievementViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    path('api/', include('djoser.urls')),
-    path('api/', include('djoser.urls.authtoken')),
-
+    # cats API
     path('api/', include(router.urls)),
+    path('api/', include('cats.urls')),
+
+    # USERS (DJOSER)
+    path('api/users/', include('djoser.urls')),
+    path('api/auth/', include('djoser.urls.authtoken')),
 ]
 
 if settings.DEBUG:
