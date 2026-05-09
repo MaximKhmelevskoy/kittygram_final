@@ -6,9 +6,6 @@ on:
       - main
 
 jobs:
-
-# ---------------- TESTS ----------------
-
   tests:
     runs-on: ubuntu-latest
     steps:
@@ -33,7 +30,6 @@ jobs:
           cd backend
           python manage.py test
 
-
   frontend_tests:
     runs-on: ubuntu-latest
     steps:
@@ -52,9 +48,6 @@ jobs:
         run: |
           cd frontend
           npm run test
-
-
-# ---------------- BUILD ----------------
 
   build_backend:
     runs-on: ubuntu-latest
@@ -75,7 +68,6 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_backend:latest
 
-
   build_frontend:
     runs-on: ubuntu-latest
     needs: frontend_tests
@@ -94,7 +86,6 @@ jobs:
           context: ./frontend/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_frontend:latest
-
 
   build_gateway:
     runs-on: ubuntu-latest
@@ -116,9 +107,6 @@ jobs:
           context: ./nginx/
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/kittygram_gateway:latest
-
-
-# ---------------- DEPLOY ----------------
 
   deploy:
     runs-on: ubuntu-latest
@@ -152,8 +140,6 @@ jobs:
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py migrate
             sudo docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --noinput
-
-# ---------------- NOTIFY ----------------
 
   send_message:
     runs-on: ubuntu-latest
