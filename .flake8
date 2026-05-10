@@ -1,0 +1,25 @@
+[flake8]
+ignore =
+    W503,
+    R504,
+    D100,
+    D101,
+    D102,
+    D103,
+    D104,
+    D105,
+    D106,
+    D107,
+    N806
+
+exclude =
+    tests/,
+    */migrations/,
+    env/,
+    venv/,
+    .venv/
+
+per-file-ignores =
+    */settings.py:E501
+
+max-complexity = 10
