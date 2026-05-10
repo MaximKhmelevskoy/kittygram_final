@@ -1,26 +1,102 @@
-#  Как работать с репозиторием финального задания
+# Kittygram
 
-## Что нужно сделать
+![Main Kittygram workflow](https://github.com/MaximKhmelevskoy/kittygram_final/actions/workflows/main.yml/badge.svg)
 
-Настроить запуск проекта Kittygram в контейнерах и CI/CD с помощью GitHub Actions
+## Описание проекта
 
-## Как проверить работу с помощью автотестов
+Kittygram — это веб-приложение для публикации фотографий котиков.
 
-В корне репозитория создайте файл tests.yml со следующим содержимым:
-```yaml
-repo_owner: ваш_логин_на_гитхабе
-kittygram_domain: полная ссылка (https://доменное_имя) на ваш проект Kittygram
-taski_domain: полная ссылка (https://доменное_имя) на ваш проект Taski
-dockerhub_username: ваш_логин_на_докерхабе
+Пользователи могут:
+- регистрироваться и авторизовываться;
+- добавлять котиков;
+- загружать изображения;
+- просматривать список котиков;
+- редактировать и удалять свои публикации.
+
+Проект разворачивается в Docker-контейнерах и автоматически деплоится на сервер через GitHub Actions.
+
+---
+
+## Технологии
+
+### Backend
+- Python 3.11
+- Django
+- Django REST Framework
+- Gunicorn
+- PostgreSQL
+
+### Frontend
+- React
+- JavaScript
+
+### DevOps
+- Docker
+- Docker Compose
+- Nginx
+- GitHub Actions
+- Docker Hub
+
+---
+
+## Ссылки на проект
+
+### Kittygram
+https://kittygram-maksi.duckdns.org
+
+### Taski
+https://taski-maksi.duckdns.org
+
+---
+
+## Как развернуть проект
+
+### 1. Клонировать репозиторий
+
+```bash
+git clone git@github.com:maxpadget/kittygram_final.git
+cd kittygram_final
 ```
 
-Скопируйте содержимое файла `.github/workflows/main.yml` в файл `kittygram_workflow.yml` в корневой директории проекта.
+### 2. Создать файл .env (пример)
 
-Для локального запуска тестов создайте виртуальное окружение, установите в него зависимости из backend/requirements.txt и запустите в корневой директории проекта `pytest`.
+```
+POSTGRES_DB=kittygram
+POSTGRES_USER=kittygram_user
+POSTGRES_PASSWORD=kittygram_password
+DB_HOST=db
+DB_PORT=5432
 
-## Чек-лист для проверки перед отправкой задания
+SECRET_KEY=django-insecure-very-long-random-string-change-me
 
-- Проект Taski доступен по доменному имени, указанному в `tests.yml`.
-- Проект Kittygram доступен по доменному имени, указанному в `tests.yml`.
-- Пуш в ветку main запускает тестирование и деплой Kittygram, а после успешного деплоя вам приходит сообщение в телеграм.
-- В корне проекта есть файл `kittygram_workflow.yml`.
+DEBUG=False
+
+ALLOWED_HOSTS=127.0.0.1,localhost,kittygram-maksi.duckdns.org
+```
+
+### 3. Запустить контейнеры
+
+```bash
+docker compose -f docker-compose.production.yml up -d
+```
+
+### 4. Выполнить миграции
+
+```bash
+docker compose -f docker-compose.production.yml exec backend python manage.py migrate
+```
+
+### 5. Собрать статику
+
+```bash
+docker compose -f docker-compose.production.yml exec backend python manage.py collectstatic --no-input
+```
+
+### 6. Открыть проект
+
+Kittygram: <https://kittygram-maksi.duckdns.org>
+
+---
+
+### Над проектом работал:
+[Максим Хмелевской](https://github.com/MaximKhmelevskoy)
