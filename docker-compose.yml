@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3.12'
 
 volumes:
   pg_data:
@@ -8,33 +8,26 @@ volumes:
 services:
   db:
     image: postgres:13
-    env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
-
-  backend:
-    image: maxpadget/kittygram_backend:latest
     env_file: .env
-    depends_on:
-      - db
+  backend:
+    build: ./backend/
+    env_file: .env
     volumes:
-      - static:/static/
-      - media:/app/media/
-    command: gunicorn kittygram_backend.wsgi:application --bind 0.0.0.0:8000
-
+      - media:/app/media
+      - static:/app/collected_static
   frontend:
-    image: maxpadget/kittygram_frontend:latest
+    env_file: .env
+    build: ./frontend/
+    command: cp -r /app/build/. /static/
     volumes:
-      - static:/static/
-    command: sh -c "cp -r /app/build/. /static/"
-
+      - static:/static
   gateway:
-    image: maxpadget/kittygram_gateway:latest
+    build: ./nginx/
     env_file: .env
     ports:
-      - "9000:80"
+      - 9000:80
     volumes:
-      - static:/static/
-      - media:/media/
-    depends_on:
-      - backend
+      - static:/static
+      - media:/media
