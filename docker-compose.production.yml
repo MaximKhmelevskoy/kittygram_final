@@ -26,9 +26,10 @@ services:
 
   frontend:
     image: maxpadget/kittygram_frontend:latest
+    env_file: .env
     volumes:
       - static:/static
-    command: cp -r /app/build/. /static/
+    command: sh -c "cp -r /app/build/. /static/ && tail -f /dev/null"
 
   gateway:
     image: maxpadget/kittygram_gateway:latest
