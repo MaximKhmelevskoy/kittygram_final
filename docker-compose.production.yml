@@ -1,10 +1,11 @@
+version: '3.3'
+
 volumes:
   pg_data:
   static:
   media:
 
 services:
-
   db:
     image: postgres:13
     env_file: .env
@@ -17,27 +18,23 @@ services:
     depends_on:
       - db
     volumes:
-      - static:/app/static/
+      - static:/static/
       - media:/app/media/
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn kittygram_backend.wsgi:application --bind 0.0.0.0:8000"
+    command: gunicorn kittygram_backend.wsgi:application --bind 0.0.0.0:8000
 
   frontend:
     image: maxpadget/kittygram_frontend:latest
-    env_file: .env
     volumes:
-      - static:/static
-    command: sh -c "cp -r /app/build/. /static/ && tail -f /dev/null"
+      - static:/static/
+    command: sh -c "cp -r /app/build/. /static/"
 
   gateway:
     image: maxpadget/kittygram_gateway:latest
+    env_file: .env
     ports:
       - "9000:80"
     volumes:
-      - static:/static
-      - media:/media
+      - static:/static/
+      - media:/media/
     depends_on:
       - backend
-      - frontend
