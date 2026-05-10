@@ -25,7 +25,7 @@ services:
     depends_on:
       - backend
     volumes:
-      - static_volume:/static
+      - static_volume:/app/build
 
   gateway:
     image: maxpadget/kittygram_gateway
